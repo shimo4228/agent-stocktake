@@ -1,0 +1,30 @@
+# agent-stocktake
+
+> An Agent Skill that audits agent definitions (`~/.claude/agents/*.md`) with a hybrid cost model: the `description` is always-loaded via the agent-type listing (residency, audited for density, truthfulness, and aggregate word count), while the body loads only on invocation (audited for suppression instructions, previous-generation over-constraint, substrate absorption, currency, and uniqueness). Verdicts: Keep / Improve / Update / Merge / Demote-to-skill / Dissolve / Retire, confirmed one by one.
+
+The premise: an agent definition pays both stocktake cost models at once — a skill's cost is trigger pollution, a rule's cost is residency, and an agent's description is a rule-like resident while its body is a skill-like invocation payload. The two layers get different audit questions.
+
+## Core model
+
+- **Two-layer screen**: seven binary questions — two on the description (earns residency? truthful to body?), five on the body (free of suppression instructions? free of over-constraint? not absorbed? references current? unique?).
+- **Improve-by-inversion**: suppression instructions (confidence thresholds, severity floors) are rewritten in the opposite direction, never just deleted — deletion leaves the suppressive frame.
+- **Fresh/rich context axis** for absorption: fresh-context roles (review, adversarial verification, essence evaluation) legitimately live in subagents; rich-context roles (planning, generation) are main-loop work, so the main loop counts as an absorber. Two overrides: frozen-input render contracts and bulk context isolation.
+- **Verdict pressure-test**: non-Keep drafts face refutation questions; a Dissolve claim that cannot name its absorber concretely is refuted.
+- **Aggregate residency**: total description words is a set-level judgment input — the Keep bar rises as the listing crowds.
+- **Usage as lower bound**: invocation telemetry never triggers a verdict alone; unmeasured renders as `—`, never 0.
+
+## Files
+
+- [SKILL.md](skills/agent-stocktake/SKILL.md): the full skill definition — modes, Phases 1–4, the seven-question screen, verdict table, ledger format.
+- [README.md](README.md): overview, install, hybrid cost model, references.
+- [README.ja.md](README.ja.md): Japanese README.
+- [CHANGELOG.md](CHANGELOG.md): version history.
+
+## Boundaries
+
+- NOT for skill quality (skill-stocktake), always-loaded rules (rules-stocktake), cross-asset generation audits (generation-audit), or whole-config GC (config-gc).
+- Evaluation is origin-blind and holistic — binary answers are evidence, never aggregated into a score.
+
+## About
+
+Extends the Curate phase of the Agent Knowledge Cycle (AKC, DOI 10.5281/zenodo.19200726) to the agent-definition layer, completing the stocktake set (skill-health / skill-stocktake / rules-stocktake / agent-stocktake). Author: shimo4228. License: MIT.
