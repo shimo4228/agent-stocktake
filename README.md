@@ -2,7 +2,7 @@ Language: English | [日本語](README.ja.md)
 
 # agent-stocktake
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/shimo4228/agent-stocktake) [![GitMCP](https://img.shields.io/endpoint?url=https://gitmcp.io/badge/shimo4228/agent-stocktake)](https://gitmcp.io/shimo4228/agent-stocktake)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/shimo4228/agent-stocktake)
 
 An [Agent Skill](https://agentskills.io/specification) that audits your **agent definitions** (`~/.claude/agents/*.md`) for quality. It is the third stocktake sibling, next to [skill-stocktake](https://github.com/shimo4228/skill-stocktake) and [rules-stocktake](https://github.com/shimo4228/rules-stocktake), and it exists because an agent definition pays **both** of their cost models at once.
 
