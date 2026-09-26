@@ -1,6 +1,6 @@
 ---
 name: agent-stocktake
-description: "Audit ~/.claude/agents/*.md (subagent definitions) for description-layer residency cost, body-layer quality, suppression instructions, staleness, and substrate absorption, assigning Keep/Improve/Update/Merge/Demote-to-skill/Dissolve/Retire verdicts. Use when the user says \"audit my agents\", \"agent stocktake\", \"which agents should I retire or merge\", 「agent を棚卸しして」「エージェント定義を見直して」, or when the model generation changed and agent bodies written for the previous one may suppress or over-constrain the current one. NOT for — skill quality → skill-stocktake; rules → rules-stocktake; runtime 層との横断照合 → generation-audit; whole-config GC → config-gc."
+description: "Audit ~/.claude/agents/*.md (subagent definitions) for description-layer residency cost, body-layer quality, suppression instructions, staleness, and substrate absorption, assigning Keep/Improve/Update/Merge/Demote-to-skill/Dissolve/Retire verdicts. Use when the user says \"audit my agents\", \"agent stocktake\", \"which agents should I retire or merge\", \"take stock of my agents\", \"review my agent definitions\", or when the model generation changed and agent bodies written for the previous one may suppress or over-constrain the current one. NOT for — skill quality → skill-stocktake; rules → rules-stocktake; cross-checking against the runtime layer → generation-audit; whole-config GC → config-gc."
 license: MIT
 metadata:
   author: shimo4228
@@ -55,7 +55,7 @@ would give wrong numbers rather than fewer ones.
 ### Step 1 — Run the evidence script (do not count by hand)
 
 ```bash
-uv run --project ~/.claude/skills/agent-stocktake \
+uv run --frozen --project ~/.claude/skills/agent-stocktake \
        --directory ~/.claude/skills/agent-stocktake \
        python scripts/agent_evidence.py --root ~/.claude
 ```
@@ -78,7 +78,7 @@ corpus is unreadable). It measures and enumerates; it never assigns a verdict.
 
 The last two are **candidates, not findings** — read every cited line before writing it up. The catalog is also a **floor, not a
 census**: it holds five phrasings drawn from one corpus, so a suppression written
-some other way ("skip anything you're unsure about", 「ノイズになる指摘は避ける」)
+some other way ("skip anything you're unsure about", "avoid findings that would just be noise")
 appears in no JSON field. Keep reading for those; an empty list is not a clean bill.
 
 For the measured false-positive ratios and which lines produced them, see
@@ -147,7 +147,7 @@ rest the **body layer** (invocation):
 - [ ] *Body free of suppression instructions?* — start from this agent's
   `suppression_candidates` in the Phase 1 JSON, handled per Step 1.
   What counts: confidence thresholds ("only report findings you are ≥N% sure of",
-  「確信度を付け、低いものは捨てる」), severity floors ("only high-severity"), "be
+  "assign each finding a confidence and discard the low ones"), severity floors ("only high-severity"), "be
   conservative" framings. The current-generation guidance is: report everything,
   filter in a separate pass — a suppression instruction is followed literally and
   silently drops findings. A No here is an **Improve-by-inversion** candidate:
@@ -157,7 +157,7 @@ rest the **body layer** (invocation):
   and whose body is a verbatim copy (e.g. a built-in override such as `Explore`), the
   source version named in the body's leading comment matches the installed tool
   (`claude --version`); a mismatch is an Update (diff against the bundle and re-copy).
-  The two body questions below are skipped for such copies — the body is the vendor's,
+  The suppression and over-constraint questions are skipped for such copies — the body is the vendor's,
   not ours (ADR-0070)
 - [ ] *Body free of previous-generation over-constraint?* — exhaustive step-by-step
   procedures for judgment the current model holds natively, repeated emphasis,
@@ -175,7 +175,7 @@ rest the **body layer** (invocation):
   loop itself counts as an absorber. Two auxiliary rationales legitimately override
   the rich-context pull (ADR-0024): a **frozen-input render contract** — the caller
   freezes a self-contained packet before invocation, so conversation context is not
-  needed by design (adr-writer per ADR-0016, prompt-writer) —
+  needed by design (prompt-writer) —
   and **bulk context isolation** — the work reads or produces volume that would
   pollute the main context (refactor-cleaner)
 - [ ] *Technical references current?* — **unconditionally verify** every artifact the
@@ -186,7 +186,7 @@ rest the **body layer** (invocation):
 - [ ] *Unique within the set?* — no other agent (or skill) owns the same job; a
   documented orchestrator→sub-agent split is NOT overlap
 
-Seven questions and no more — further decomposition degrades holistic judgment
+Eight questions and no more — further decomposition degrades holistic judgment
 (see References).
 
 **Stage 2 — verdict pressure-test (non-Keep candidates only).** Generate 1–3
@@ -294,8 +294,8 @@ Created on the first run — do not pre-seed. Update inline with Read/Write, not
 - `skill-stocktake` / `rules-stocktake` — the two siblings; this skill fuses their cost
   models (description = residency, body = invocation).
 - `generation-audit` — the cross-asset orchestrator; on a model-generation change it
-  collects runtime-layer evidence (conflict / redundancy / drift classification) and
-  hands the agents slice to this skill as Stage 2 evidence.
+  collects runtime-layer evidence (conflict / redundancy) and `/claude-api prompt-audit`
+  findings, and hands the agents slice to this skill as Stage 2 evidence.
 - `skill-creator` — handoff target for the skill-creation half of Demote.
 - `adr-writer` — records the why of a Dissolve.
 - `config-gc` — whole-config GC; this skill judges agent *quality*.
@@ -313,7 +313,7 @@ no score aggregation) is inherited from skill-stocktake / rules-stocktake and fo
 the checklist-decomposition evaluation line: BinEval "Ask, Don't Judge"
 ([arXiv:2606.27226](https://arxiv.org/abs/2606.27226)), CheckEval (arXiv:2403.18771),
 TICK (arXiv:2410.03608) — over-decomposition degrades correlation on holistic quality,
-hence seven questions and no score. The suppression-instruction question implements the
+hence eight questions and no score. The suppression-instruction question implements the
 current-generation prompting guidance (report everything, filter in a separate pass);
 the absorption question and Dissolve verdict implement `rules/common/akc-cycle.md`'s
 Scaffold Dissolution (inward / downward vectors + model-generation trigger, ADR-0018).
