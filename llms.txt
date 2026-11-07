@@ -1,6 +1,6 @@
 # agent-stocktake
 
-> An Agent Skill that audits agent definitions (`~/.claude/agents/*.md`) with a hybrid cost model: the `description` is always-loaded via the agent-type listing (residency, audited for density, truthfulness, and aggregate word count), while the body loads only on invocation (audited for suppression instructions, previous-generation over-constraint, substrate absorption, currency, and uniqueness). Verdicts: Keep / Improve / Update / Merge / Demote-to-skill / Dissolve / Retire, confirmed one by one.
+> An Agent Skill that audits agent definitions (`~/.claude/agents/*.md`, or a repository's `.claude/agents/`) with a hybrid cost model: the `description` is always-loaded via the agent-type listing (residency, audited for density, truthfulness, and aggregate word count), while the body loads only on invocation (audited for suppression instructions, previous-generation over-constraint, substrate absorption, currency, and uniqueness). Verdicts: Keep / Improve / Update / Merge / Demote-to-skill / Dissolve / Retire, presented as one report and applied after one approval.
 
 The premise: an agent definition pays both stocktake cost models at once — a skill's cost is trigger pollution, a rule's cost is residency, and an agent's description is a rule-like resident while its body is a skill-like invocation payload. The two layers get different audit questions.
 
